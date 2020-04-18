@@ -27,10 +27,6 @@
 #include "configuration.h" // sets all variables
 #include "LCD.h" // prints to LCD
 
-
-
-
-
 void activateFreq() { // calculates the nextval-value for the current frequency
   unsigned long freq;
   freq = frequency * correctionFactor;
@@ -50,29 +46,35 @@ void setup() {
   delay(1000);
   lcd.clear();
 
-  //cp.reset();
   activateFreq();
-  freqDisplay = frequency;
-  //pinMode(dispPin, INPUT);
-  //set port/pin  mode
+  //freqDisplay = frequency;
+
   //TIMER INTERRUPT SETUP
   DDRD = 0xFF;//all outputs
   DDRC = 0x00;//analog inputs
   //DDRB = 0x00;//digital inputs
+  
   cli();//disable interrupts
+
   Serial.end(); // begin(9600);
+  
   //set timer1 interrupt at 65536kHz
   TCCR1A = 0;// set entire TCCR1A register to 0
-  //TCCR1B = 0;// same for TCCR1B
+  TCCR1B = 0;// same for TCCR1B
   TCNT1  = 0;//initialize counter value to 0;
+  
   // set timer count for 65536khz increments
   OCR1A = 30; // = (16*10^6) / (65536*8) - 1
+  
   // turn on CTC mode
-  //TCCR1B |= (1 << WGM12);
+  TCCR1B |= (1 << WGM12);
+  
   // Set CS11 bit for 8 prescaler
-  //TCCR1B |= (1 << CS11);
+  TCCR1B |= (1 << CS11);
+  
   // enable timer compare interrupt
   TIMSK1 |= (1 << OCIE1A);
+  
   sei(); // enable interrupts
 }
 
@@ -115,60 +117,38 @@ void setCurrentFreq() { // gets current frequency from the poti positions
   sweepDecVal = getDecVal(0);
   powerDecVal = getDecVal(1);
   modeDecVal =  getDecVal(2);
+  
   if (modeDecVal != oldMode)
     activateFreq();
+    
   if (powerDecVal <= 4) {
     freqDigits[powerDecVal] = sweepDecVal;
     setfreq = freqDigits[4] * 10000 + freqDigits[3] * 1000 + freqDigits[2] * 100 + freqDigits[1] * 10 + freqDigits[0];
   }
+  
   if (powerDecVal == 5)
     setfreq = valA[0];
+  
   if (powerDecVal == 6)
     setfreq = 1000 + (valA[0] * 8.79);
+  
   if (powerDecVal > 6)
     setfreq = musicalNotes[(powerDecVal - 7) * 7 + sweepDecVal];
+  
   if (setfreq != frequency) {
     frequency = setfreq;
     activateFreq();
   }
+  
   oldMode = modeDecVal;
 }
 
 void loop() {
-  /*  if (digitalRead(dispPin) == 1) {
-      if (!dispOn) {
-        cp.reset();
-        freqDisplay = frequency;
-        dispOn = true;
-      }
-      if ((freqDisplay < frequency - 2) || (freqDisplay > frequency + 2)) // avoids a too shaky number in sweep mode
-        freqDisplay = frequency;
-      if (powerDecVal < 5)
-        freqDisplay = frequency;
-      cp.setMultiplier(delayMultipliers[modeDecVal]); // having the display update reasonably fast in each waveform requires different multipliers
-      cp.writeNumber(freqDisplay);
-    } else {
-      dispOn = false;
-    }
-  */
 
   for (byte a = 0; a < 3; a++) // reading the current values of the 3 pots
     valA[a] = analogRead(a);
   setCurrentFreq();
 
   printToLCD();
-  /*
-  for (byte count = 0; count < 3; count++) { // show the current values of the 3 pots
-    if (count == 0) {
-      cursX = 0;
-    } else if (count == 1) {
-      cursX = 5;
-    } else {
-      cursX = 10;
-    }
-    lcd.setCursor(cursX, 1);
-    lcd.print(valA[count]);
-    //lcd.print("hej");
-  }
-  */
+
 }
