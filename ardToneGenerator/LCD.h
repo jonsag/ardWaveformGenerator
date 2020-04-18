@@ -89,9 +89,10 @@ void printToLCD() {
     }
     lcd.setCursor(cursX, cursY);
     lcd.print(potValue);
-
+/*
     length1 = getLength(potValue);
-    lcd.setCursor(cursX + length1, 1);
+    lcd.setCursor(cursX + length1 + 1, 1);
     lcd.print("   ");
+    */
   }
 }

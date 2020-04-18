@@ -20,7 +20,7 @@ const int typeX = 0; // where to print the wave type
 const int typeY = 0;
 
 String freqText = "Freq: ";
-const int freqX = 10; // where to print the frequency
+const int freqX = 0; // where to print the frequency
 const int freqY = 1;
 
 int length1; // for calculating length of integers 

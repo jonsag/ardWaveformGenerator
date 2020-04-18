@@ -33,12 +33,12 @@
    9: squarewave 95%
 
    Power: (A1)
-   0: 0-1024 Hz
-   1: 0-10240 Hz, in steps of 10
-   2: 0-102400 Hz, in steps of 100
-   3: 0-1024000 Hz, in steps of 1000
-   4: 0-10240000 Hz, in steps of 10000
-   5: frequency (0-1024) Hz
+   0: 0-9 Hz
+   1: 0-90 Hz, in steps of 10
+   2: 0-900 Hz, in steps of 100
+   3: 0-9000 Hz, in steps of 1000
+   4: 0-90000 Hz, in steps of 10000
+   5: frequency (0-1023) Hz
    6: 1000 + frequency * 8.79 Hz
    7: musical, octave 0
    8: musical, octave 1
@@ -52,9 +52,9 @@
    4: G
    5: A
    6: H
-   7:
-   8:
-   9:
+   7: C
+   8: D
+   9: E
 */
 
 #include "configuration.h" // sets all variables
