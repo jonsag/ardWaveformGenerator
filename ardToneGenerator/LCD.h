@@ -61,7 +61,7 @@ void printToLCD() {
 
   /*******************************
       Print frequency
-    *******************************/
+  *******************************/
   lcd.setCursor(freqX, freqY);
   lcd.print(frequency);
 
