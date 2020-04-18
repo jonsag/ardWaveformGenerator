@@ -63,24 +63,31 @@ void printToLCD() {
       Print frequency
   *******************************/
   lcd.setCursor(freqX, freqY);
+  lcd.print(freqText);
+
+  lcd.setCursor(freqX + freqText.length(), freqY);
   lcd.print(frequency);
 
   length1 = getLength(frequency);
-  lcd.setCursor(freqX + length1, freqY);
+  lcd.setCursor(freqX + freqText.length() + length1, freqY);
   lcd.print("Hz   ");
 
+  /*******************************
+      Debugging potentiometer values
+  *******************************/
+  cursX = 11;
   for (byte b = 0; b < 3; b++) { // show the current values of the 3 pots
     if (b == 0) {
       potValue = sweepDecVal;
-      cursX = 0;
+      cursX = cursX + 0;
     } else if (b == 1) {
       potValue = powerDecVal;
-      cursX = 5;
+      cursX = cursX + 2;
     } else {
       potValue = modeDecVal;
-      cursX = 10;
+      cursX = cursX + 4;
     }
-    lcd.setCursor(cursX, 1);
+    lcd.setCursor(cursX, cursY);
     lcd.print(potValue);
 
     length1 = getLength(potValue);

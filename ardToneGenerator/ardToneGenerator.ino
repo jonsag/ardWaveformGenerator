@@ -18,31 +18,44 @@
     see <http://www.gnu.org/licenses/>.
 */
 
-/*
- * Modes: (A2(
- * 0: sine
- * 1: sawtooth
- * 2: triangle
- * 3: squarewave 5%
- * 4: squarewave 15%
- * 5: squarewave 30%
- * 6: squarewave 50%
- * 7: squarewave 70%
- * 8: squarewave 85%
- * 9: squarewave 95%
- * 
- * Power: (A1)
- * 0: 0-1024 Hz
- * 1: 0-10240 Hz, in steps of 10
- * 2: 0-102400 Hz, in steps of 100
- * 3: 0-1024000 Hz, in steps of 1000
- * 4: 0-10240000 Hz, in steps of 10000
- * 5: frequency (0-1024) Hz
- * 6: 1000 + frequency * 8.79 Hz
- * 7: music
- * 8: music
- * 9: music
- */
+/* Potentiomenters
+
+   Modes: (A2)
+   0: sine
+   1: sawtooth
+   2: triangle
+   3: squarewave 5%
+   4: squarewave 15%
+   5: squarewave 30%
+   6: squarewave 50%
+   7: squarewave 70%
+   8: squarewave 85%
+   9: squarewave 95%
+
+   Power: (A1)
+   0: 0-1024 Hz
+   1: 0-10240 Hz, in steps of 10
+   2: 0-102400 Hz, in steps of 100
+   3: 0-1024000 Hz, in steps of 1000
+   4: 0-10240000 Hz, in steps of 10000
+   5: frequency (0-1024) Hz
+   6: 1000 + frequency * 8.79 Hz
+   7: musical, octave 0
+   8: musical, octave 1
+   9: musical, octave 2
+
+   Frequency; (A0)
+   0: C
+   1: D
+   2: E
+   3: F
+   4: G
+   5: A
+   6: H
+   7:
+   8:
+   9:
+*/
 
 #include "configuration.h" // sets all variables
 #include "LCD.h" // prints to LCD
@@ -146,34 +159,31 @@ byte getDecVal(byte whichA) { // returns the decimal value (0-9) for the request
   return (retval);
 }
 
-void setCurrentFreq() { // gets current frequency from the poti positions
+void setCurrentFreq() { // gets current frequency and mode from the potentiometer positions
 
-  sweepDecVal = getDecVal(0);
-  powerDecVal = getDecVal(1);
-  modeDecVal =  getDecVal(2);
+  sweepDecVal = getDecVal(0); // decimal value, 0-9, of frequency potentiometer, selects frequency or musical note
+  powerDecVal = getDecVal(1); // decimal value, 0-9, of power potentiometer, selects frequency range or musical notes octave
+  modeDecVal =  getDecVal(2); // decimal value, 0-9, of mode potentiometer, selects waveform
 
-  if (modeDecVal != oldMode) {
+  if (modeDecVal != oldMode) { // restart frequency settings on mode change
     activateFreq();
   }
 
-  if (powerDecVal <= 4) {
+  if (powerDecVal <= 4) { // frequency range
     freqDigits[powerDecVal] = sweepDecVal;
     setfreq = freqDigits[4] * 10000 + freqDigits[3] * 1000 + freqDigits[2] * 100 + freqDigits[1] * 10 + freqDigits[0];
-  }
-
-  if (powerDecVal == 5) {
+  
+  } else if (powerDecVal == 5) { // direct frequency from frequency potentiometer
     setfreq = valA[0];
-  }
-
-  if (powerDecVal == 6) {
+  
+  } else if (powerDecVal == 6) {
     setfreq = 1000 + (valA[0] * 8.79);
-  }
-
-  if (powerDecVal > 6) {
+  
+  } else { // sets a musical note frequency
     setfreq = musicalNotes[(powerDecVal - 7) * 7 + sweepDecVal];
   }
 
-  if (setfreq != frequency) {
+  if (setfreq != frequency) { // set frequency
     frequency = setfreq;
     activateFreq();
   }

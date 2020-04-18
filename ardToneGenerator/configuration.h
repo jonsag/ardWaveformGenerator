@@ -19,12 +19,16 @@ byte oldModeDecVal = -1;
 const int typeX = 0; // where to print the wave type
 const int typeY = 0;
 
+String freqText = "Freq: ";
 const int freqX = 10; // where to print the frequency
-const int freqY = 0;
+const int freqY = 1;
 
-byte potValue;
-int length1;
-int cursX;
+int length1; // for calculating length of integers 
+
+byte potValue; // stores potentiometer values for debugging
+
+int cursX; // debugging potentiometer values
+int cursY = 0;
 
 /*******************************
   Joe Kutz's lines
