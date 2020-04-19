@@ -32,29 +32,39 @@ void printToLCD() {
       modeText = "Square";
     }
     lcd.print(modeText);
-    lcd.setCursor(typeX + modeText.length(), typeY);
-    lcd.print("    ");
 
     if (modeDecVal >= 3) {
-      lcd.setCursor(typeX + modeText.length() + 1, typeY);
+      lcd.setCursor(typeX + modeText.length(), typeY);
       if (modeDecVal == 3) {
-        sqwText = "5";
+        sqwText = " 5";
       } else if (modeDecVal == 4) {
-        sqwText = "15";
+        sqwText = " 15";
       } else if (modeDecVal == 5) {
-        sqwText = "30";
+        sqwText = " 30";
       } else if (modeDecVal == 6) {
-        sqwText = "50";
+        sqwText = " 50";
       } else if (modeDecVal == 7) {
-        sqwText = "70";
+        sqwText = " 70";
       } else if (modeDecVal == 8) {
-        sqwText = "85";
+        sqwText = " 85";
       } else {
-        sqwText = "95";
+        sqwText = " 95";
       }
       lcd.print(sqwText);
-      lcd.setCursor(typeX + modeText.length() + 1 + sqwText.length(), typeY);
-      lcd.print("% ");
+      lcd.setCursor(typeX + modeText.length() + sqwText.length(), typeY);
+      lcd.print("%");
+    }
+
+    if (modeDecVal <= 2) {
+      for (byte c = typeX + modeText.length(); c < lcdColumns - 5; c++) {
+        lcd.setCursor(c, typeY);
+        lcd.print(" ");
+      }
+    } else {
+      for (byte c = typeX + modeText.length() + sqwText.length() + 1; c < lcdColumns - 5; c++) {
+        lcd.setCursor(c, typeY);
+        lcd.print(" ");
+      }
     }
     oldModeDecVal = modeDecVal;
   }
@@ -70,29 +80,55 @@ void printToLCD() {
 
   length1 = getLength(frequency);
   lcd.setCursor(freqX + freqText.length() + length1, freqY);
-  lcd.print("Hz   ");
+  lcd.print("Hz");
+
+  for (byte d = freqX + freqText.length() + length1 + 2; d < lcdColumns - 2; d++) {
+        lcd.setCursor(d, freqY);
+        lcd.print(" ");
+      }
+
+  /*******************************
+      Print note names
+  *******************************/
+  lcd.setCursor(noteX, noteY);
+
+  if (powerDecVal >= 7) {
+    noteName = noteNames[(powerDecVal - 7) * 7 + sweepDecVal];
+
+    if (noteName != oldNoteName) {
+      lcd.print(noteName);
+      oldNoteName = noteName;
+    }
+
+  } else {
+    lcd.print("  ");
+    oldNoteName = "xx";
+  }
 
   /*******************************
       Debugging potentiometer values
   *******************************/
-  cursX = 11;
-  for (byte b = 0; b < 3; b++) { // show the current values of the 3 pots
-    if (b == 0) {
-      potValue = sweepDecVal;
-      cursX = cursX + 0;
-    } else if (b == 1) {
-      potValue = powerDecVal;
-      cursX = cursX + 2;
-    } else {
-      potValue = modeDecVal;
-      cursX = cursX + 4;
+  if (debug) {
+    for (byte b = 0; b < 3; b++) { // show the current values of the 3 pots
+      if (b == 0) {
+        potValue = sweepDecVal;
+        lcd.setCursor(debugX, debugY);
+      } else if (b == 1) {
+        potValue = powerDecVal;
+        lcd.setCursor(debugX + 2, debugY);
+      } else {
+        potValue = modeDecVal;
+        lcd.setCursor(debugX + 4, debugY);
+      }
+      lcd.print(potValue);
+      /*
+          length1 = getLength(potValue);
+          lcd.setCursor(cursX + length1 + 1, 1);
+          lcd.print("   ");
+      */
     }
-    lcd.setCursor(cursX, cursY);
-    lcd.print(potValue);
-/*
-    length1 = getLength(potValue);
-    lcd.setCursor(cursX + length1 + 1, 1);
-    lcd.print("   ");
-    */
+  } else {
+    lcd.setCursor(debugX, debugY);
+    lcd.print("     ");
   }
 }

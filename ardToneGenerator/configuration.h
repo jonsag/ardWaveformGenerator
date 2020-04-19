@@ -23,12 +23,20 @@ String freqText = "Freq: ";
 const int freqX = 0; // where to print the frequency
 const int freqY = 1;
 
+const int noteX = lcdColumns - 2;
+const int noteY = 1;
+String noteNames[] = {"C0", "D0", "E0", "F0", "G0", "A0", "B0", "C1", "D1", "E1", "F1", "G1", "A1", "B1", "C2", "D2", "E2", "F2", "G2", "A2", "B2", "C3", "D3", "E3"};
+String noteName;
+String oldNoteName = "xx";
+
 int length1; // for calculating length of integers 
 
 byte potValue; // stores potentiometer values for debugging
 
-int cursX; // debugging potentiometer values
-int cursY = 0;
+boolean debug = HIGH;
+const int debugX = 11; // debugging potentiometer values
+const int debugY = 0;
+
 
 /*******************************
   Joe Kutz's lines
