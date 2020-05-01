@@ -112,13 +112,13 @@ void printToLCD() {
     for (byte b = 0; b < 3; b++) { // show the current values of the 3 pots
       if (b == 0) {
         potValue = sweepDecVal;
-        lcd.setCursor(debugX, debugY);
+        lcd.setCursor(debugX + 4, debugY);
       } else if (b == 1) {
         potValue = powerDecVal;
         lcd.setCursor(debugX + 2, debugY);
       } else {
         potValue = modeDecVal;
-        lcd.setCursor(debugX + 4, debugY);
+        lcd.setCursor(debugX, debugY);
       }
       lcd.print(potValue);
       /*
