@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 /*  version 0.01; July, 2016
     sound_generator: A arduino waveform generator that uses 3 analog pots for settings and drives a LCD
     hackaday.io/project/12756-a-feature-rich-arduino-waveform-generator
@@ -18,7 +20,7 @@
     see <http://www.gnu.org/licenses/>.
 */
 
-/* Potentiomenters
+/* Potentiometers
 
    Modes: (A2)
    0: sine
@@ -58,15 +60,17 @@
 */
 
 #include "configuration.h" // sets all variables
-#include "LCD.h" // prints to LCD
+#include "LCD.h"           // prints to LCD
 
-void activateFreq() { // calculates the nextval-value for the current frequency
+void activateFreq()
+{ // calculates the nextval-value for the current frequency
   unsigned long freq;
   freq = frequency * correctionFactor;
   nextVal = (freq << bitShifter) / sampleFactor;
 }
 
-void setup() {
+void setup()
+{
   /*******************************
     Start LCD
   *******************************/
@@ -80,21 +84,21 @@ void setup() {
   lcd.clear();
 
   activateFreq();
-  //freqDisplay = frequency;
+  // freqDisplay = frequency;
 
-  //TIMER INTERRUPT SETUP
-  DDRD = 0xFF;//all outputs
-  DDRC = 0x00;//analog inputs
-  //DDRB = 0x00;//digital inputs
+  // TIMER INTERRUPT SETUP
+  DDRD = 0xFF; // all outputs
+  DDRC = 0x00; // analog inputs
+  // DDRB = 0x00;//digital inputs
 
-  cli();//disable interrupts
+  cli(); // disable interrupts
 
   Serial.end(); // begin(9600);
 
-  //set timer1 interrupt at 65536kHz
-  TCCR1A = 0;// set entire TCCR1A register to 0
-  TCCR1B = 0;// same for TCCR1B
-  TCNT1  = 0;//initialize counter value to 0;
+  // set timer1 interrupt at 65536kHz
+  TCCR1A = 0; // set entire TCCR1A register to 0
+  TCCR1B = 0; // same for TCCR1B
+  TCNT1 = 0;  // initialize counter value to 0;
 
   // set timer count for 65536khz increments
   OCR1A = 30; // = (16*10^6) / (65536*8) - 1
@@ -111,79 +115,99 @@ void setup() {
   sei(); // enable interrupts
 }
 
-ISR(TIMER1_COMPA_vect) { // the timer-driven interrupt routine
+ISR(TIMER1_COMPA_vect)
+{ // the timer-driven interrupt routine
 
   wavePos = wavePos + nextVal;
 
-  if (modeDecVal == 0) { // sine wave
+  if (modeDecVal == 0)
+  { // sine wave
     waveP = wavePos >> bitShifter;
     PORTD = pgm_read_byte_near(sinewave + waveP);
   }
 
-  if (modeDecVal == 1) { // sawtooth wave
+  if (modeDecVal == 1)
+  { // sawtooth wave
     PORTD = wavePos >> bitShiftST;
   }
 
-  if (modeDecVal == 2) { // triangle wave
-    if (wavePos < triSizeHalf) {
+  if (modeDecVal == 2)
+  { // triangle wave
+    if (wavePos < triSizeHalf)
+    {
       PORTD = wavePos >> bitShiftTRI;
     }
-    if (wavePos > triSizeHalf) {
+    if (wavePos > triSizeHalf)
+    {
       PORTD = (waveSizeScaled - wavePos) >> bitShiftTRI;
     }
   }
 
-  if (modeDecVal > 2) { // square wave
-    if (wavePos < squareWavePerc[modeDecVal - 3]) {
+  if (modeDecVal > 2)
+  { // square wave
+    if (wavePos < squareWavePerc[modeDecVal - 3])
+    {
       PORTD = 255;
-    } else {
+    }
+    else
+    {
       PORTD = 0;
     }
   }
 }
 
-
-
-byte getDecVal(byte whichA) { // returns the decimal value (0-9) for the requested analog port
+byte getDecVal(byte whichA)
+{ // returns the decimal value (0-9) for the requested analog port
 
   byte retval = 0;
 
-  if (valA[whichA] >= Arefs[whichA][9]) {
+  if (valA[whichA] >= Arefs[whichA][9])
+  {
     retval = 9;
-  } else {
-    while (Arefs[whichA][retval] + ( (Arefs[whichA][retval + 1] - Arefs[whichA][retval]) / 2 ) < valA[whichA] && retval < 8) {
-      retval ++;
+  }
+  else
+  {
+    while (Arefs[whichA][retval] + ((Arefs[whichA][retval + 1] - Arefs[whichA][retval]) / 2) < valA[whichA] && retval < 8)
+    {
+      retval++;
     }
   }
 
   return (retval);
 }
 
-void setCurrentFreq() { // gets current frequency and mode from the potentiometer positions
+void setCurrentFreq()
+{ // gets current frequency and mode from the potentiometer positions
 
   sweepDecVal = getDecVal(0); // decimal value, 0-9, of frequency potentiometer, selects frequency or musical note
   powerDecVal = getDecVal(1); // decimal value, 0-9, of power potentiometer, selects frequency range or musical notes octave
-  modeDecVal =  getDecVal(2); // decimal value, 0-9, of mode potentiometer, selects waveform
+  modeDecVal = getDecVal(2);  // decimal value, 0-9, of mode potentiometer, selects waveform
 
-  if (modeDecVal != oldMode) { // restart frequency settings on mode change
+  if (modeDecVal != oldMode)
+  { // restart frequency settings on mode change
     activateFreq();
   }
 
-  if (powerDecVal <= 4) { // frequency range
+  if (powerDecVal <= 4)
+  { // frequency range
     freqDigits[powerDecVal] = sweepDecVal;
     setfreq = freqDigits[4] * 10000 + freqDigits[3] * 1000 + freqDigits[2] * 100 + freqDigits[1] * 10 + freqDigits[0];
-  
-  } else if (powerDecVal == 5) { // direct frequency from frequency potentiometer
+  }
+  else if (powerDecVal == 5)
+  { // direct frequency from frequency potentiometer
     setfreq = valA[0];
-  
-  } else if (powerDecVal == 6) {
+  }
+  else if (powerDecVal == 6)
+  {
     setfreq = 1000 + (valA[0] * 8.79);
-  
-  } else { // sets a musical note frequency
+  }
+  else
+  { // sets a musical note frequency
     setfreq = musicalNotes[(powerDecVal - 7) * 7 + sweepDecVal];
   }
 
-  if (setfreq != frequency) { // set frequency
+  if (setfreq != frequency)
+  { // set frequency
     frequency = setfreq;
     activateFreq();
   }
@@ -191,14 +215,15 @@ void setCurrentFreq() { // gets current frequency and mode from the potentiomete
   oldMode = modeDecVal;
 }
 
-void loop() {
+void loop()
+{
 
-  for (byte a = 0; a < 3; a++) { // reading the current values of the 3 pots
+  for (byte a = 0; a < 3; a++)
+  { // reading the current values of the 3 pots
     valA[a] = analogRead(a);
   }
 
   setCurrentFreq();
 
   printToLCD();
-
 }
