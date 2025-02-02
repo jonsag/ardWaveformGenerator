@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "ardToneGenerator-pio",
+			"path": "ardToneGenerator-pio"
+		},
+		{
+			"name": "ardToneGeneratorJK-pio",
+			"path": "ardToneGeneratorJK-pio"
+		},
+		{
+			"name": "ardWaveformGenerator-AG-pio",
+			"path": "ardWaveformGenerator-AG-pio"
+		},
+		{
+			"name": "ardWaveformGenerator-pio",
+			"path": "ardWaveformGenerator-pio"
+		}
+	],
+	"settings": {}
+}

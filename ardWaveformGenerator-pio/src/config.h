@@ -1,6 +1,6 @@
 
 // Uncomment the line below if you want to change the Phase instead of the FREQ register
-//#define usePhase
+// #define usePhase
 
 AD9833 sigGen(10, 24000000);        // Initialise our AD9833 with FSYNC pin = 10 and a master clock frequency of 24MHz
 LiquidCrystal_I2C lcd(0x27, 16, 2); // LCD Initialise
